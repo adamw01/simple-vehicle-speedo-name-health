@@ -1,5 +1,5 @@
-# simple-vehicle-speedo-name-health
-Simple Vehicle Speedometer/Name/Health
+# Simple Vehicle Speedometer/Health/Vehicle Name
+Simple Vehicle Speedometer/Name/Health displayed on the bottom of the users screen.
 
 ##Introduction
 
