@@ -10,9 +10,9 @@
 #include <a_samp>
 
 // TEXTDRAWS //
-new Text: VehicleName[MAX_PLAYERS],
-Text: VehicleSpeed[MAX_PLAYERS],
-Text: VehicleHealth[MAX_PLAYERS];
+new PlayerText: VehicleName[MAX_PLAYERS],
+PlayerText: VehicleSpeed[MAX_PLAYERS],
+PlayerText: VehicleHealth[MAX_PLAYERS];
 
 // VEHICLE ARRAY //
 new Vehicles[212][]=
@@ -37,31 +37,29 @@ public OnFilterScriptInit()
 
 public OnPlayerConnect(playerid)
 {
-	VehicleName[playerid] = TextDrawCreate(53.799999, 436, "Vehicle: ~g~"); // Vehicle name (displays 1st)
-	TextDrawLetterSize(VehicleName[playerid], 0.2, 0.999);
-	TextDrawAlignment(VehicleName[playerid], 2);
-	TextDrawColor(VehicleName[playerid], -1);
-	TextDrawSetShadow(VehicleName[playerid], 0);
-	TextDrawSetOutline(VehicleName[playerid], 1);
-	TextDrawFont(VehicleName[playerid], 1);
-	TextDrawUseBox(VehicleName[playerid], 1);
-	TextDrawBoxColor(VehicleName[playerid], 0x00000088);
+	VehicleName[playerid] = CreatePlayerTextDraw(playerid, 53.799999, 436, "Vehicle: ~g~"); // Vehicle name (displays 1st)
+	PlayerTextDrawLetterSize(playerid, VehicleName[playerid], 0.2, 0.999);
+	PlayerTextDrawAlignment(playerid, VehicleName[playerid], 2);
+	PlayerTextDrawColor(playerid, VehicleName[playerid], -1);
+	PlayerTextDrawSetOutline(playerid, VehicleName[playerid], 1);
+	PlayerTextDrawFont(playerid, VehicleName[playerid], 1);
+	PlayerTextDrawUseBox(playerid, VehicleName[playerid], 1);
+	PlayerTextDrawBoxColor(playerid, VehicleName[playerid], 0x00000088);
 
-    VehicleSpeed[playerid] = TextDrawCreate(128.799999, 436, "Speed: ~y~0 ~g~KM/H"); // Vehicle speed in KM/H (displays 2nd)
-	TextDrawLetterSize(VehicleSpeed[playerid], 0.2, 0.999);
-	TextDrawAlignment(VehicleSpeed[playerid], 2);
-	TextDrawColor(VehicleSpeed[playerid], -1);
-	TextDrawSetShadow(VehicleSpeed[playerid], 0);
-	TextDrawSetOutline(VehicleSpeed[playerid], 1);
-	TextDrawFont(VehicleSpeed[playerid], 1);
+    VehicleSpeed[playerid] = CreatePlayerTextDraw(playerid, 128.799999, 436, "Speed: ~y~0 ~g~KM/H"); // Vehicle speed in KM/H (displays 2nd)
+	PlayerTextDrawLetterSize(playerid, VehicleSpeed[playerid], 0.2, 0.999);
+	PlayerTextDrawAlignment(playerid, VehicleSpeed[playerid], 2);
+	PlayerTextDrawColor(playerid, VehicleSpeed[playerid], -1);
+	PlayerTextDrawSetOutline(playerid, VehicleSpeed[playerid], 1);
+	PlayerTextDrawFont(playerid, VehicleSpeed[playerid], 1);
 
-	VehicleHealth[playerid] = TextDrawCreate(175.799999, 436, "Vehicle Health: ~g~0"); // Vehicle health as percentage (displays last)
-	TextDrawBackgroundColor(VehicleHealth[playerid], 255);
-	TextDrawFont(VehicleHealth[playerid], 1);
-	TextDrawLetterSize(VehicleHealth[playerid], 0.2, 0.999);
-	TextDrawColor(VehicleHealth[playerid], -1);
-	TextDrawSetOutline(VehicleHealth[playerid], 1);
-	TextDrawSetProportional(VehicleHealth[playerid], 1);
+	VehicleHealth[playerid] = CreatePlayerTextDraw(playerid, 175.799999, 436, "Vehicle Health: ~g~0"); // Vehicle health as percentage (displays last)
+	PlayerTextDrawBackgroundColor(playerid, VehicleHealth[playerid], 255);
+	PlayerTextDrawFont(playerid, VehicleHealth[playerid], 1);
+	PlayerTextDrawLetterSize(playerid, VehicleHealth[playerid], 0.2, 0.999);
+	PlayerTextDrawColor(playerid, VehicleHealth[playerid], -1);
+	PlayerTextDrawSetOutline(playerid, VehicleHealth[playerid], 1);
+	PlayerTextDrawSetProportional(playerid, VehicleHealth[playerid], 1);
 	return 1;
 }
 
@@ -75,14 +73,14 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 	// Showing the textdraw if the player is in the vehicle.
 	// If the player decides to leave the vehicle, the textdraw will not display.
 	new getvname[50];
-    if(oldstate-1 && newstate) TextDrawHideForPlayer(playerid, VehicleName[playerid]);
-	else if(newstate-1) TextDrawShowForPlayer(playerid, VehicleName[playerid]), format(getvname, sizeof(getvname), "Vehicle: ~g~%s", Vehicles[GetVehicleModel(GetPlayerVehicleID(playerid)) - 400]), TextDrawSetString(VehicleName[playerid], getvname);
+    if(oldstate-1 && newstate) PlayerTextDrawHide(playerid, VehicleName[playerid]);
+	else if(newstate-1) PlayerTextDrawShow(playerid, VehicleName[playerid]), format(getvname, sizeof(getvname), "Vehicle: ~g~%s", Vehicles[GetVehicleModel(GetPlayerVehicleID(playerid)) - 400]), PlayerTextDrawSetString(playerid, VehicleName[playerid], getvname);
 
-	if(oldstate-1 && newstate) TextDrawHideForPlayer(playerid, VehicleSpeed[playerid]);
-	else if(newstate-1) TextDrawShowForPlayer(playerid, VehicleSpeed[playerid]);
+	if(oldstate-1 && newstate) PlayerTextDrawHide(playerid, VehicleSpeed[playerid]);
+	else if(newstate-1) PlayerTextDrawShow(playerid, VehicleSpeed[playerid]);
 
-	if(oldstate-1 && newstate) TextDrawHideForPlayer(playerid, VehicleHealth[playerid]);
-	else if(newstate-1) TextDrawShowForPlayer(playerid, VehicleHealth[playerid]);
+	if(oldstate-1 && newstate) PlayerTextDrawHide(playerid, VehicleHealth[playerid]);
+	else if(newstate-1) PlayerTextDrawShow(playerid, VehicleHealth[playerid]);
 	return 1;
 }
 
@@ -91,9 +89,9 @@ public OnPlayerUpdate(playerid)
 	if(IsPlayerInAnyVehicle(playerid))
 	{
 	    // Getting the vehicles speed in km/h
-		new vspeed[25];
+  		new vspeed[25];
 		format(vspeed, sizeof(vspeed), "Speed: ~y~%d ~g~KM/H", GetVehicleSpeed(playerid));
-		TextDrawSetString(VehicleSpeed[playerid], vspeed);
+		PlayerTextDrawSetString(playerid, VehicleSpeed[playerid], vspeed);
 
 		// Getting the vehicles health (shown as percentage)
 		new vhealthtd[32], Float:vHealth;
@@ -101,7 +99,7 @@ public OnPlayerUpdate(playerid)
 		new Float:percentage = (((vHealth - 250.0) / (1000.0 - 250.0)) * 100.0);
 
         format(vhealthtd, sizeof(vhealthtd), "Vehicle Health: ~g~%.0f", percentage);
-        TextDrawSetString(VehicleHealth[playerid], vhealthtd);
+        PlayerTextDrawSetString(playerid, VehicleHealth[playerid], vhealthtd);
 	}
 	return 1;
 }
@@ -111,7 +109,8 @@ public OnPlayerUpdate(playerid)
 // GETVEHICLESPEED STOCK //
 stock GetVehicleSpeed(playerid)
 {
-	new Float: Pos[4];
+    new Float:Pos[4];
     GetVehicleVelocity(GetPlayerVehicleID(playerid), Pos[0], Pos[1], Pos[2]);
-    return floatround(1.61 * floatsqroot(floatabs(floatpower(Pos[0] + Pos[1] + Pos[2], 2))) * 100);
+    Pos[3] = floatsqroot(floatpower(floatabs(Pos[0]), 2) + floatpower(floatabs(Pos[1]), 2) + floatpower(floatabs(Pos[2]), 2)) * 181.5;
+    return floatround(Pos[3]);
 }
