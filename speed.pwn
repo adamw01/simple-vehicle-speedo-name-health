@@ -1,11 +1,3 @@
-/*******************************************************************************
-*  FILTERSCRIPT NAME: Simple Vehicle Speedometer/Health/Vehicle Name
-*  FILTERSCRIPT DEVELOPER: Adam W (FreAkeD)
-*
-*  INFORMATION: Displays vehicle statistics on the bottom of the players screen.
-*  (Vehicle Name / Vehicle Health / Vehicle Speed in KM/H
-*******************************************************************************/
-
 // INCLUDES //
 #include <a_samp>
 
@@ -37,34 +29,47 @@ public OnFilterScriptInit()
 
 public OnPlayerConnect(playerid)
 {
-	VehicleName[playerid] = CreatePlayerTextDraw(playerid, 53.799999, 436, "Vehicle: ~g~"); // Vehicle name (displays 1st)
-	PlayerTextDrawLetterSize(playerid, VehicleName[playerid], 0.2, 0.999);
-	PlayerTextDrawAlignment(playerid, VehicleName[playerid], 2);
-	PlayerTextDrawColor(playerid, VehicleName[playerid], -1);
-	PlayerTextDrawSetOutline(playerid, VehicleName[playerid], 1);
-	PlayerTextDrawFont(playerid, VehicleName[playerid], 1);
-	PlayerTextDrawUseBox(playerid, VehicleName[playerid], 1);
-	PlayerTextDrawBoxColor(playerid, VehicleName[playerid], 0x00000088);
+    for(new i = 0; i < MAX_PLAYERS; i++)
+    {
+		VehicleName[i] = CreatePlayerTextDraw(i, 53.799999, 436, "Vehicle: ~g~"); // Vehicle name (displays 1st)
+		PlayerTextDrawLetterSize(i, VehicleName[i], 0.2, 0.999);
+		PlayerTextDrawAlignment(i, VehicleName[i], 2);
+		PlayerTextDrawColor(i, VehicleName[i], -1);
+		PlayerTextDrawSetOutline(i, VehicleName[i], 1);
+		PlayerTextDrawFont(i, VehicleName[i], 1);
+		PlayerTextDrawUseBox(i, VehicleName[i], 1);
+		PlayerTextDrawBoxColor(i, VehicleName[i], 0x00000088);
 
-    VehicleSpeed[playerid] = CreatePlayerTextDraw(playerid, 128.799999, 436, "Speed: ~y~0 ~g~KM/H"); // Vehicle speed in KM/H (displays 2nd)
-	PlayerTextDrawLetterSize(playerid, VehicleSpeed[playerid], 0.2, 0.999);
-	PlayerTextDrawAlignment(playerid, VehicleSpeed[playerid], 2);
-	PlayerTextDrawColor(playerid, VehicleSpeed[playerid], -1);
-	PlayerTextDrawSetOutline(playerid, VehicleSpeed[playerid], 1);
-	PlayerTextDrawFont(playerid, VehicleSpeed[playerid], 1);
+    	VehicleSpeed[i] = CreatePlayerTextDraw(i, 128.799999, 436, "Speed: ~y~0 ~g~KM/H"); // Vehicle speed in KM/H (displays 2nd)
+		PlayerTextDrawLetterSize(i, VehicleSpeed[i], 0.2, 0.999);
+		PlayerTextDrawAlignment(i, VehicleSpeed[i], 2);
+		PlayerTextDrawColor(i, VehicleSpeed[i], -1);
+		PlayerTextDrawSetOutline(i, VehicleSpeed[i], 1);
+		PlayerTextDrawFont(i, VehicleSpeed[i], 1);
 
-	VehicleHealth[playerid] = CreatePlayerTextDraw(playerid, 175.799999, 436, "Vehicle Health: ~g~0"); // Vehicle health as percentage (displays last)
-	PlayerTextDrawBackgroundColor(playerid, VehicleHealth[playerid], 255);
-	PlayerTextDrawFont(playerid, VehicleHealth[playerid], 1);
-	PlayerTextDrawLetterSize(playerid, VehicleHealth[playerid], 0.2, 0.999);
-	PlayerTextDrawColor(playerid, VehicleHealth[playerid], -1);
-	PlayerTextDrawSetOutline(playerid, VehicleHealth[playerid], 1);
-	PlayerTextDrawSetProportional(playerid, VehicleHealth[playerid], 1);
+		VehicleHealth[i] = CreatePlayerTextDraw(i, 175.799999, 436, "Vehicle Health: ~g~0"); // Vehicle health as percentage (displays last)
+		PlayerTextDrawBackgroundColor(i, VehicleHealth[i], 255);
+		PlayerTextDrawFont(i, VehicleHealth[i], 1);
+		PlayerTextDrawLetterSize(i, VehicleHealth[i], 0.2, 0.999);
+		PlayerTextDrawColor(i, VehicleHealth[i], -1);
+		PlayerTextDrawSetOutline(i, VehicleHealth[i], 1);
+		PlayerTextDrawSetProportional(i, VehicleHealth[i], 1);
+    }
 	return 1;
 }
 
 public OnPlayerDisconnect(playerid, reason)
 {
+    for(new i = 0; i < MAX_PLAYERS; i++)
+	{
+		if(IsPlayerConnected(i))
+		{
+			PlayerTextDrawDestroy(i, VehicleName[i]);
+    		PlayerTextDrawDestroy(i, VehicleSpeed[i]);
+    		PlayerTextDrawDestroy(i, VehicleHealth[i]);
+		}
+
+	}
 	return 1;
 }
 
@@ -86,20 +91,26 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 
 public OnPlayerUpdate(playerid)
 {
-	if(IsPlayerInAnyVehicle(playerid))
+    for(new i = 0; i < MAX_PLAYERS; i++)
 	{
-	    // Getting the vehicles speed in km/h
-  		new vspeed[25];
-		format(vspeed, sizeof(vspeed), "Speed: ~y~%d ~g~KM/H", GetVehicleSpeed(playerid));
-		PlayerTextDrawSetString(playerid, VehicleSpeed[playerid], vspeed);
+		if(IsPlayerConnected(i))
+		{
+			if(IsPlayerInAnyVehicle(playerid))
+			{
+	    		// Getting the vehicles speed in km/h
+  				new vspeed[25];
+				format(vspeed, sizeof(vspeed), "Speed: ~y~%d ~g~KM/H", GetVehicleSpeed(i));
+				PlayerTextDrawSetString(i, VehicleSpeed[i], vspeed);
 
-		// Getting the vehicles health (shown as percentage)
-		new vhealthtd[32], Float:vHealth;
-        GetVehicleHealth(GetPlayerVehicleID(playerid), vHealth);
-		new Float:percentage = (((vHealth - 250.0) / (1000.0 - 250.0)) * 100.0);
+				// Getting the vehicles health (shown as percentage)
+				new vhealthtd[32], Float:vHealth;
+        		GetVehicleHealth(GetPlayerVehicleID(playerid), vHealth);
+				new Float:percentage = (((vHealth - 250.0) / (1000.0 - 250.0)) * 100.0);
 
-        format(vhealthtd, sizeof(vhealthtd), "Vehicle Health: ~g~%.0f", percentage);
-        PlayerTextDrawSetString(playerid, VehicleHealth[playerid], vhealthtd);
+        		format(vhealthtd, sizeof(vhealthtd), "Vehicle Health: ~g~%.0f", percentage);
+        		PlayerTextDrawSetString(i, VehicleHealth[i], vhealthtd);
+			}
+		}
 	}
 	return 1;
 }
